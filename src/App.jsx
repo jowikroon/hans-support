@@ -96,11 +96,13 @@ function HeartLanding({onNavigate,hugCount,onHug,hugSent}){
     <Fade d={0.15}><h2 style={{fontFamily:"'Outfit',sans-serif",fontSize:34,fontWeight:200,color:C.rose,lineHeight:1.2,marginBottom:8}}>Heartbeat Hub</h2></Fade>
     <Fade d={0.2}><p style={{fontSize:14,color:C.textMuted,fontWeight:300,marginBottom:40}}>Adem in en reik uit</p></Fade>
 
-    {/* BIG HEART */}
-    <Fade d={0.3}><div style={{position:"relative",width:280,height:238,margin:"0 auto 32px"}}>
-      <div style={{position:"absolute",top:"50%",left:"50%",transform:"translate(-50%,-50%)",width:400,height:400,borderRadius:"50%",background:`radial-gradient(circle,${C.heartGlow} 0%,transparent 55%)`,animation:"heartGlow 3s ease infinite"}}/>
-      <div style={{position:"absolute",top:"50%",left:"50%",transform:"translate(-50%,-50%)",width:340,height:340,borderRadius:"50%",background:`radial-gradient(circle,${C.roseGlow} 0%,transparent 45%)`,animation:"heartGlow 3s ease 0.7s infinite"}}/>
-      <svg viewBox="0 0 100 90" style={{width:280,height:238,position:"relative",zIndex:2,filter:`drop-shadow(0 0 20px ${C.heartGlow})`,animation:"heartBeat 3s ease infinite"}}>
+    {/* BIG HEART — SVG shape + HTML text overlay for crisp readability */}
+    <Fade d={0.3}><div style={{position:"relative",width:300,height:270,margin:"0 auto 28px"}}>
+      {/* Glow layers */}
+      <div style={{position:"absolute",top:"50%",left:"50%",transform:"translate(-50%,-50%)",width:420,height:420,borderRadius:"50%",background:`radial-gradient(circle,${C.heartGlow} 0%,transparent 55%)`,animation:"heartGlow 3s ease infinite"}}/>
+      <div style={{position:"absolute",top:"50%",left:"50%",transform:"translate(-50%,-50%)",width:360,height:360,borderRadius:"50%",background:`radial-gradient(circle,${C.roseGlow} 0%,transparent 45%)`,animation:"heartGlow 3s ease 0.7s infinite"}}/>
+      {/* Heart shape only — no text in SVG */}
+      <svg viewBox="0 0 100 90" style={{width:300,height:270,position:"relative",zIndex:2,filter:`drop-shadow(0 0 20px ${C.heartGlow})`,animation:"heartBeat 3s ease infinite"}}>
         <defs>
           <linearGradient id="hf8" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stopColor={C.heartWarm} stopOpacity="0.92"/><stop offset="100%" stopColor={C.heartPeach} stopOpacity="0.78"/></linearGradient>
           <filter id="glow8"><feGaussianBlur stdDeviation="1.5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
@@ -109,15 +111,24 @@ function HeartLanding({onNavigate,hugCount,onHug,hugSent}){
         <path d="M50 85 C75 65,105 45,95 25 C88 10,70 8,50 28" fill="url(#hf8)" opacity="0.78"/>
         <path d="M50 85 C25 65,-5 45,5 25 C12 10,30 8,50 28 C70 8,88 10,95 25 C105 45,75 65,50 85Z" fill="none" stroke={C.heartWarm} strokeWidth="0.35" opacity="0.4" filter="url(#glow8)"/>
         <line x1="50" y1="30" x2="50" y2="80" stroke={C.heartWarm} strokeWidth="0.15" opacity="0.15"/>
-        <text x="27" y="44" textAnchor="middle" fill="#3a2018" fontSize="5.2" fontWeight="600" fontFamily="'Outfit',sans-serif">Cheyenne</text>
-        <text x="27" y="56" textAnchor="middle" fill="#5a3828" fontSize="3.2" fontFamily="'Outfit',sans-serif" opacity="0.7">Knuffels</text>
-        <text x="27" y="62" textAnchor="middle" fill="#5a3828" fontSize="3.2" fontFamily="'Outfit',sans-serif" opacity="0.7">gegeven:</text>
-        <text x="27" y="72" textAnchor="middle" fill="#3a2018" fontSize="9" fontWeight="700" fontFamily="'Outfit',sans-serif">{STATS.hugsSent+hugCount}</text>
-        <text x="73" y="44" textAnchor="middle" fill="#3a2018" fontSize="5.2" fontWeight="600" fontFamily="'Outfit',sans-serif">Hans</text>
-        <text x="73" y="56" textAnchor="middle" fill="#5a3828" fontSize="3.2" fontFamily="'Outfit',sans-serif" opacity="0.7">Knuffels</text>
-        <text x="73" y="62" textAnchor="middle" fill="#5a3828" fontSize="3.2" fontFamily="'Outfit',sans-serif" opacity="0.7">gehad:</text>
-        <text x="73" y="72" textAnchor="middle" fill="#3a2018" fontSize="9" fontWeight="700" fontFamily="'Outfit',sans-serif">{STATS.hugsRec}</text>
       </svg>
+      {/* HTML text overlays — crisp, scalable, always readable */}
+      <div style={{position:"absolute",top:0,left:0,right:0,bottom:0,zIndex:3,display:"flex",pointerEvents:"none",animation:"heartBeat 3s ease infinite"}}>
+        {/* Left half — Cheyenne */}
+        <div style={{flex:1,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",paddingTop:20,paddingRight:8}}>
+          <span style={{fontSize:16,fontWeight:600,color:"#4a2820",letterSpacing:0.5,marginBottom:6}}>Cheyenne</span>
+          <span style={{fontSize:11,color:"#6a4838",opacity:0.8,lineHeight:1.4}}>Knuffels</span>
+          <span style={{fontSize:11,color:"#6a4838",opacity:0.8,marginBottom:4}}>gegeven:</span>
+          <span style={{fontSize:32,fontWeight:700,color:"#3a1810",lineHeight:1}}>{STATS.hugsSent+hugCount}</span>
+        </div>
+        {/* Right half — Hans */}
+        <div style={{flex:1,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",paddingTop:20,paddingLeft:8}}>
+          <span style={{fontSize:16,fontWeight:600,color:"#4a2820",letterSpacing:0.5,marginBottom:6}}>Hans</span>
+          <span style={{fontSize:11,color:"#6a4838",opacity:0.8,lineHeight:1.4}}>Knuffels</span>
+          <span style={{fontSize:11,color:"#6a4838",opacity:0.8,marginBottom:4}}>gehad:</span>
+          <span style={{fontSize:32,fontWeight:700,color:"#3a1810",lineHeight:1}}>{STATS.hugsRec}</span>
+        </div>
+      </div>
     </div></Fade>
 
     {/* Hug button */}
