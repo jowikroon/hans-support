@@ -60,9 +60,14 @@ function NeonLine({color=C.rose,w="50%"}){return <div style={{width:w,height:1,m
 function Hero({onEnter}){
   const [phase,setPhase]=useState(0);
   const [hs,setHs]=useState(1);
+  const [breathPhase,setBreathPhase]=useState("in"); // "in" or "out"
+
   useEffect(()=>{setTimeout(()=>setPhase(1),400);
     const hb=setInterval(()=>{setHs(1.12);setTimeout(()=>setHs(1.04),150);setTimeout(()=>setHs(1.14),280);setTimeout(()=>setHs(1),500)},1500);
-    return()=>clearInterval(hb)},[]);
+    // Breathing cycle: 4s in, 4s out
+    const br=setInterval(()=>setBreathPhase(p=>p==="in"?"out":"in"),4000);
+    return()=>{clearInterval(hb);clearInterval(br)}},[]); 
+
   return <div style={{position:"relative",width:"100%",height:"100vh",overflow:"hidden",display:"flex",flexDirection:"column",justifyContent:"center",alignItems:"center",background:C.bg}}>
     <div style={{position:"absolute",inset:0,background:`radial-gradient(ellipse at 50% 40%,${C.roseGlow} 0%,transparent 55%),radial-gradient(ellipse at 30% 65%,${C.cyanDim} 0%,transparent 40%),radial-gradient(ellipse at 70% 30%,${C.purpleGlow} 0%,transparent 35%)`,animation:"heroPulse 8s ease infinite"}}/>
     {[...Array(12)].map((_,i)=><div key={i} style={{position:"absolute",width:2+Math.random()*3,height:2+Math.random()*3,borderRadius:"50%",background:`rgba(232,140,160,${0.08+Math.random()*0.12})`,left:`${10+Math.random()*80}%`,top:`${10+Math.random()*80}%`,animation:`floatP ${8+Math.random()*10}s ease ${Math.random()*5}s infinite`,zIndex:1}}/>)}
@@ -75,7 +80,38 @@ function Hero({onEnter}){
     <div style={{position:"relative",zIndex:3,textAlign:"center",padding:"0 36px",maxWidth:440,opacity:phase>=1?1:0,transform:phase>=1?"translateY(0)":"translateY(30px)",transition:"all 1.4s cubic-bezier(0.16,1,0.3,1) 0.3s"}}>
       <p style={{fontSize:10,fontWeight:500,textTransform:"uppercase",letterSpacing:6,color:C.textDim,marginBottom:32,animation:"fadeUp 1s ease 0.7s both"}}>Een veilige plek</p>
       <h1 style={{fontFamily:"'Outfit',sans-serif",fontSize:48,fontWeight:200,color:C.text,lineHeight:1.1,letterSpacing:-1,marginBottom:14,animation:"fadeUp 1s ease 0.9s both"}}>hans<span style={{color:C.rose}}>.support</span></h1>
-      <p style={{fontSize:15,color:C.textMuted,lineHeight:1.8,fontWeight:300,marginBottom:48,animation:"fadeUp 1s ease 1.1s both"}}>Adem in. Reik uit.<br/>Wij luisteren.</p>
+
+      {/* Breathing animation */}
+      <div style={{marginBottom:48,animation:"fadeUp 1s ease 1.1s both"}}>
+        {/* Breathing circle */}
+        <div style={{
+          width:80,height:80,borderRadius:"50%",margin:"0 auto 20px",
+          border:`1.5px solid ${C.rose}44`,
+          transform:breathPhase==="in"?"scale(1.35)":"scale(0.8)",
+          opacity:breathPhase==="in"?0.7:0.3,
+          transition:"all 4s cubic-bezier(0.4,0,0.2,1)",
+          background:`radial-gradient(circle,${C.roseGlow} 0%,transparent 70%)`,
+          boxShadow:breathPhase==="in"?`0 0 40px ${C.roseGlow}, inset 0 0 20px ${C.roseDim}`:`0 0 10px ${C.roseDim}`,
+        }}/>
+        {/* Text that crossfades */}
+        <div style={{position:"relative",height:24}}>
+          <p style={{
+            position:"absolute",width:"100%",
+            fontSize:18,fontWeight:300,color:C.text,letterSpacing:4,
+            opacity:breathPhase==="in"?1:0,
+            transform:breathPhase==="in"?"translateY(0)":"translateY(-6px)",
+            transition:"all 1.2s cubic-bezier(0.4,0,0.2,1)",
+          }}>Adem in</p>
+          <p style={{
+            position:"absolute",width:"100%",
+            fontSize:18,fontWeight:300,color:C.textMuted,letterSpacing:4,
+            opacity:breathPhase==="out"?1:0,
+            transform:breathPhase==="out"?"translateY(0)":"translateY(6px)",
+            transition:"all 1.2s cubic-bezier(0.4,0,0.2,1)",
+          }}>Adem uit</p>
+        </div>
+      </div>
+
       <button onClick={onEnter} style={{padding:"15px 52px",borderRadius:60,background:"transparent",border:`1px solid ${C.rose}33`,color:C.text,fontSize:14,fontWeight:400,fontFamily:"inherit",cursor:"pointer",letterSpacing:2,transition:"all 0.4s ease",animation:"fadeUp 1s ease 1.3s both",backdropFilter:"blur(8px)"}}
         onMouseEnter={e=>{e.target.style.background=C.roseDim;e.target.style.borderColor=C.rose+"77";e.target.style.boxShadow=`0 0 35px ${C.roseGlow}`}}
         onMouseLeave={e=>{e.target.style.background="transparent";e.target.style.borderColor=C.rose+"33";e.target.style.boxShadow="none"}}>Binnenkomen</button>
