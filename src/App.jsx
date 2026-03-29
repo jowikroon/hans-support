@@ -261,81 +261,91 @@ const REVIEW_QUOTES = [
   { text: "Emotionele beschikbaarheid: loading", sub: "buffert... buffert..." },
 ];
 
-// Positions where badges can appear (spread around the page)
+// Positions — diverse, away from edges, well-spaced
 const POSITIONS = [
-  { top: "6%", left: "2%", align: "left" },
-  { top: "14%", right: "2%", align: "right" },
-  { top: "26%", left: "1%", align: "left" },
-  { top: "38%", right: "1%", align: "right" },
-  { top: "50%", left: "2%", align: "left" },
-  { top: "62%", right: "2%", align: "right" },
-  { top: "74%", left: "1%", align: "left" },
-  { top: "84%", right: "1%", align: "right" },
-  { top: "92%", left: "3%", align: "left" },
+  { top: "8%", left: "12%", align: "left" },
+  { top: "12%", right: "10%", align: "right" },
+  { top: "28%", left: "8%", align: "left" },
+  { top: "35%", right: "8%", align: "right" },
+  { top: "52%", left: "10%", align: "left" },
+  { top: "60%", right: "12%", align: "right" },
+  { top: "75%", left: "14%", align: "left" },
+  { top: "80%", right: "10%", align: "right" },
 ];
 
 function FloatingReviews() {
-  const [visibleReviews, setVisibleReviews] = useState([]);
-  const [fadingOut, setFadingOut] = useState(new Set());
-  const usedPositions = useRef(new Set());
-  const quotePool = useRef([...Array(REVIEW_QUOTES.length).keys()].sort(() => Math.random() - 0.5));
-  const quoteIndex = useRef(0);
-  const reviewCounter = useRef(0);
+  const [reviews, setReviews] = useState([]); // {id, pos, quote, phase: 'in'|'visible'|'out'}
+  const usedPos = useRef(new Set());
+  const pool = useRef([...Array(REVIEW_QUOTES.length).keys()].sort(() => Math.random() - 0.5));
+  const poolIdx = useRef(0);
 
-  const getNextQuote = () => {
-    if (quoteIndex.current >= quotePool.current.length) {
-      quotePool.current = [...Array(REVIEW_QUOTES.length).keys()].sort(() => Math.random() - 0.5);
-      quoteIndex.current = 0;
+  const nextQuote = () => {
+    if (poolIdx.current >= pool.current.length) {
+      pool.current = [...Array(REVIEW_QUOTES.length).keys()].sort(() => Math.random() - 0.5);
+      poolIdx.current = 0;
     }
-    return quotePool.current[quoteIndex.current++];
+    return pool.current[poolIdx.current++];
   };
 
-  const addReview = () => {
-    const availPos = POSITIONS.filter((_, i) => !usedPositions.current.has(i));
-    if (availPos.length === 0) return;
-    const posIdx = POSITIONS.indexOf(availPos[Math.floor(Math.random() * availPos.length)]);
-    usedPositions.current.add(posIdx);
-    const quoteIdx = getNextQuote();
-    reviewCounter.current++;
-    const id = Date.now() + Math.random();
-    setVisibleReviews(prev => [...prev, { pos: posIdx, quote: quoteIdx, id }]);
-  };
-
-  const removeOldest = () => {
-    setVisibleReviews(prev => {
-      if (prev.length === 0) return prev;
-      const oldest = prev[0];
-      setFadingOut(f => new Set([...f, oldest.id]));
-      setTimeout(() => {
-        usedPositions.current.delete(oldest.pos);
-        setVisibleReviews(p => p.filter(r => r.id !== oldest.id));
-        setFadingOut(f => { const n = new Set(f); n.delete(oldest.id); return n; });
-        setTimeout(() => addReview(), 400);
-      }, 600);
-      return prev;
-    });
+  const pickPos = () => {
+    const avail = POSITIONS.map((_, i) => i).filter(i => !usedPos.current.has(i));
+    if (avail.length === 0) return -1;
+    return avail[Math.floor(Math.random() * avail.length)];
   };
 
   useEffect(() => {
-    const firstTimer = setTimeout(() => addReview(), 1500);
-    const interval = setInterval(() => {
-      if (reviewCounter.current < 5) {
-        addReview();
-      } else {
-        removeOldest();
-      }
-    }, 3200);
-    return () => { clearTimeout(firstTimer); clearInterval(interval); };
+    // Staggered start — first after 3s, then every 4.5s
+    const timers = [];
+
+    const addOne = () => {
+      const pos = pickPos();
+      if (pos === -1) return;
+      usedPos.current.add(pos);
+      const id = Date.now() + Math.random();
+      const quote = nextQuote();
+
+      // Phase 1: fade in (0→1 over 1.5s)
+      setReviews(prev => [...prev, { id, pos, quote, phase: "in" }]);
+
+      // Phase 2: fully visible after fade-in completes
+      timers.push(setTimeout(() => {
+        setReviews(prev => prev.map(r => r.id === id ? { ...r, phase: "visible" } : r));
+      }, 1500));
+
+      // Phase 3: start fade out after read time (4s visible)
+      timers.push(setTimeout(() => {
+        setReviews(prev => prev.map(r => r.id === id ? { ...r, phase: "out" } : r));
+      }, 5500));
+
+      // Phase 4: remove after fade-out (1.5s)
+      timers.push(setTimeout(() => {
+        usedPos.current.delete(pos);
+        setReviews(prev => prev.filter(r => r.id !== id));
+      }, 7000));
+    };
+
+    // Initial delay then stagger 3 reviews
+    timers.push(setTimeout(() => addOne(), 2500));
+    timers.push(setTimeout(() => addOne(), 5000));
+    timers.push(setTimeout(() => addOne(), 7500));
+
+    // Then keep cycling — add one every 4.5s
+    const interval = setInterval(() => addOne(), 4500);
+
+    return () => { timers.forEach(clearTimeout); clearInterval(interval); };
   }, []);
 
   return <>
-    {visibleReviews.map((r) => {
+    {reviews.map(r => {
       const pos = POSITIONS[r.pos];
       const quote = REVIEW_QUOTES[r.quote];
-      const fromRight = pos.align === "right";
-      const isFading = fadingOut.has(r.id);
-      const animIn = fromRight ? "slideFromRight" : "slideFromLeft";
-      const animOut = fromRight ? "slideOutRight" : "slideOutLeft";
+      const opacity = r.phase === "in" ? 1 : r.phase === "visible" ? 1 : 0;
+      const translateX = r.phase === "out"
+        ? (pos.align === "right" ? "20px" : "-20px")
+        : r.phase === "in"
+          ? (pos.align === "right" ? "30px" : "-30px")
+          : "0px";
+
       return (
         <div key={r.id} style={{
           position: "fixed",
@@ -343,27 +353,24 @@ function FloatingReviews() {
           left: pos.left || "auto",
           right: pos.right || "auto",
           zIndex: 40,
-          animation: `${isFading ? animOut : animIn} 0.7s cubic-bezier(0.16,1,0.3,1) both`,
+          opacity: r.phase === "in" || r.phase === "visible" ? 1 : 0,
+          transform: `translateX(${r.phase === "visible" ? "0px" : pos.align === "right" ? "20px" : "-20px"})`,
+          transition: "opacity 1.5s cubic-bezier(0.4,0,0.2,1), transform 1.5s cubic-bezier(0.4,0,0.2,1)",
           pointerEvents: "none",
-          maxWidth: 220,
+          maxWidth: 210,
         }}>
           <div style={{
-            display: "flex",
-            alignItems: "center",
-            gap: 10,
+            display: "flex", alignItems: "center", gap: 10,
             background: C.bgGlass,
-            backdropFilter: "blur(16px)",
-            WebkitBackdropFilter: "blur(16px)",
+            backdropFilter: "blur(20px)", WebkitBackdropFilter: "blur(20px)",
             border: `1px solid ${C.border}`,
-            borderRadius: 14,
-            padding: "10px 14px",
-            boxShadow: `0 4px 20px rgba(0,0,0,0.3), 0 0 15px ${C.roseDim}`,
+            borderRadius: 16, padding: "10px 14px",
+            boxShadow: `0 8px 32px rgba(0,0,0,0.25)`,
           }}>
             <img src={HANS_AVATAR} alt="" style={{
-              width: 36, height: 36, borderRadius: "50%",
-              border: `2px solid ${C.rose}44`,
-              flexShrink: 0,
-              objectFit: "cover",
+              width: 34, height: 34, borderRadius: "50%",
+              border: `1.5px solid ${C.rose}33`,
+              flexShrink: 0, objectFit: "cover",
             }} />
             <div>
               <p style={{ fontSize: 12, fontWeight: 600, color: C.text, margin: 0, lineHeight: 1.3 }}>
