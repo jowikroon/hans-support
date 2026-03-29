@@ -176,6 +176,7 @@ function HeartLanding({onNavigate,hugCount,onHug,hugSent}){
 const HANS_AVATAR = "data:image/jpeg;base64,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";
 
 const REVIEW_QUOTES = [
+  // Originals
   { text: "Dikke billen service 🍑", sub: "10/10 incident response" },
   { text: "Ze is gewoon geil!", sub: "★★★★★★ 6/5 reeten" },
   { text: "Morgen sporten is morgen sporten", sub: "★★★★☆ 4/5 reeten" },
@@ -186,16 +187,30 @@ const REVIEW_QUOTES = [
   { text: "Eindelijk serieus genomen", sub: "— De Achterdeur, geverifieerd" },
   { text: "Niet kwaadaardig, gewoon Hans", sub: "— Hans Analyse rapport" },
   { text: "Status: concept. Net als wij.", sub: "— De Wasmachine, hoopvol" },
-  { text: "Wie geeft de hond eten?", sub: "Protocol: nog niet geschreven" },
-  { text: "Haar kont verdient een eigen tab", sub: "feature request ingediend" },
+  // Hond chaos
+  { text: "Wie geeft de hond eten?", sub: "protocol: nog niet geschreven" },
+  { text: "De hond luistert naar niemand", sub: "net als Hans eigenlijk" },
+  { text: "Hond zit op de bank. Weer.", sub: "afspraak: bestond die?" },
+  { text: "'Jij zou 'm uitlaten'", sub: "— beiden, tegelijkertijd" },
+  // Billen & geil
+  { text: "Haar kont verdient een eigen tab", sub: "feature request ingediend 🍑" },
+  { text: "Die billen zijn geen bug", sub: "dat is een feature" },
+  { text: "Trust score stijgt bij squats", sub: "bewezen door wetenschap" },
+  { text: "Hans z'n handen: geverifieerd ✓", sub: "★★★★★★★ 7/5 reeten" },
+  // Sporten
+  { text: "Sporten? Morgen. Altijd morgen.", sub: "dag 847 zonder sportschool" },
+  { text: "Protocol voor alles behalve gym", sub: "prioriteiten zijn duidelijk" },
+  { text: "'Morgen ga ik echt'", sub: "— Hans, elke avond sinds 2023" },
+  { text: "Sportschool-abonnement: actief", sub: "sportschool-bezoek: inactief" },
+  // Relatie humor
   { text: "Hans zei 'zo' en deed niks", sub: "★★★☆☆ 3/5 reeten" },
   { text: "Knuffel-deficit: opgelost 🤗", sub: "Connection Metrics™" },
   { text: "Cheyenne > Hans, altijd", sub: "— het algoritme, eerlijk" },
-  { text: "Sporten? Morgen. Altijd morgen.", sub: "dag 847 zonder sportschool" },
   { text: "Warme chocomelk in 8 min", sub: "incident response SLA: voldoende" },
-  { text: "De hond luistert naar niemand", sub: "net als Hans eigenlijk" },
-  { text: "Protocol voor alles behalve gym", sub: "prioriteiten zijn duidelijk" },
-  { text: "Die billen zijn geen bug", sub: "dat is een feature 🍑" },
+  { text: "'Ik luister!' (was aan het gamen)", sub: "★★☆☆☆ 2/5 reeten" },
+  { text: "Hans bouwde een hele website", sub: "i.p.v. gewoon sorry te zeggen" },
+  { text: "Discussie om 23:30? Ticket.", sub: "systeem werkt, relatie ook" },
+  { text: "Emotionele beschikbaarheid: loading", sub: "buffert... buffert..." },
 ];
 
 // Positions where badges can appear (spread around the page)
@@ -213,57 +228,66 @@ const POSITIONS = [
 
 function FloatingReviews() {
   const [visibleReviews, setVisibleReviews] = useState([]);
+  const [fadingOut, setFadingOut] = useState(new Set());
   const usedPositions = useRef(new Set());
-  const usedQuotes = useRef(new Set());
+  const quotePool = useRef([...Array(REVIEW_QUOTES.length).keys()].sort(() => Math.random() - 0.5));
+  const quoteIndex = useRef(0);
   const reviewCounter = useRef(0);
 
-  useEffect(() => {
-    const firstTimer = setTimeout(() => addReview(), 1800);
-    const interval = setInterval(() => {
-      if (reviewCounter.current < 5) {
-        addReview();
-      } else {
-        // Cycle: remove oldest, add new
-        setVisibleReviews(prev => {
-          if (prev.length > 0) {
-            const removed = prev[0];
-            usedPositions.current.delete(removed.pos);
-            return prev.slice(1);
-          }
-          return prev;
-        });
-        // Small delay then add fresh one
-        setTimeout(() => {
-          usedPositions.current = new Set([...usedPositions.current].slice(-4));
-          addReview();
-        }, 600);
-      }
-    }, 3000);
-    return () => { clearTimeout(firstTimer); clearInterval(interval); };
-  }, []);
+  const getNextQuote = () => {
+    if (quoteIndex.current >= quotePool.current.length) {
+      quotePool.current = [...Array(REVIEW_QUOTES.length).keys()].sort(() => Math.random() - 0.5);
+      quoteIndex.current = 0;
+    }
+    return quotePool.current[quoteIndex.current++];
+  };
 
   const addReview = () => {
-    // Pick random unused position
     const availPos = POSITIONS.filter((_, i) => !usedPositions.current.has(i));
     if (availPos.length === 0) return;
     const posIdx = POSITIONS.indexOf(availPos[Math.floor(Math.random() * availPos.length)]);
     usedPositions.current.add(posIdx);
-
-    // Pick random unused quote
-    const availQuotes = REVIEW_QUOTES.filter((_, i) => !usedQuotes.current.has(i));
-    if (availQuotes.length === 0) return;
-    const quoteIdx = REVIEW_QUOTES.indexOf(availQuotes[Math.floor(Math.random() * availQuotes.length)]);
-    usedQuotes.current.add(quoteIdx);
-
+    const quoteIdx = getNextQuote();
     reviewCounter.current++;
-    setVisibleReviews(prev => [...prev, { pos: posIdx, quote: quoteIdx, id: Date.now() }]);
+    const id = Date.now() + Math.random();
+    setVisibleReviews(prev => [...prev, { pos: posIdx, quote: quoteIdx, id }]);
   };
+
+  const removeOldest = () => {
+    setVisibleReviews(prev => {
+      if (prev.length === 0) return prev;
+      const oldest = prev[0];
+      setFadingOut(f => new Set([...f, oldest.id]));
+      setTimeout(() => {
+        usedPositions.current.delete(oldest.pos);
+        setVisibleReviews(p => p.filter(r => r.id !== oldest.id));
+        setFadingOut(f => { const n = new Set(f); n.delete(oldest.id); return n; });
+        setTimeout(() => addReview(), 400);
+      }, 600);
+      return prev;
+    });
+  };
+
+  useEffect(() => {
+    const firstTimer = setTimeout(() => addReview(), 1500);
+    const interval = setInterval(() => {
+      if (reviewCounter.current < 5) {
+        addReview();
+      } else {
+        removeOldest();
+      }
+    }, 3200);
+    return () => { clearTimeout(firstTimer); clearInterval(interval); };
+  }, []);
 
   return <>
     {visibleReviews.map((r) => {
       const pos = POSITIONS[r.pos];
       const quote = REVIEW_QUOTES[r.quote];
       const fromRight = pos.align === "right";
+      const isFading = fadingOut.has(r.id);
+      const animIn = fromRight ? "slideFromRight" : "slideFromLeft";
+      const animOut = fromRight ? "slideOutRight" : "slideOutLeft";
       return (
         <div key={r.id} style={{
           position: "fixed",
@@ -271,7 +295,7 @@ function FloatingReviews() {
           left: pos.left || "auto",
           right: pos.right || "auto",
           zIndex: 40,
-          animation: `${fromRight ? "slideFromRight" : "slideFromLeft"} 0.8s cubic-bezier(0.16,1,0.3,1) both`,
+          animation: `${isFading ? animOut : animIn} 0.7s cubic-bezier(0.16,1,0.3,1) both`,
           pointerEvents: "none",
           maxWidth: 220,
         }}>
@@ -544,6 +568,8 @@ export default function App(){
     @keyframes fadeIn{from{opacity:0}to{opacity:1}}
     @keyframes slideFromLeft{from{opacity:0;transform:translateX(-80px)}to{opacity:1;transform:translateX(0)}}
     @keyframes slideFromRight{from{opacity:0;transform:translateX(80px)}to{opacity:1;transform:translateX(0)}}
+    @keyframes slideOutLeft{from{opacity:1;transform:translateX(0)}to{opacity:0;transform:translateX(-60px)}}
+    @keyframes slideOutRight{from{opacity:1;transform:translateX(0)}to{opacity:0;transform:translateX(60px)}}
     @keyframes heartBeat{0%,100%{transform:scale(1)}50%{transform:scale(1.04)}}
     @keyframes heartGlow{0%,100%{opacity:0.3;transform:translate(-50%,-50%) scale(1)}50%{opacity:0.6;transform:translate(-50%,-50%) scale(1.07)}}
     @keyframes heroPulse{0%,100%{opacity:1}50%{opacity:0.8}}
