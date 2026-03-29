@@ -57,7 +57,7 @@ function Card({children,glow,onClick,s={}}){
 function NeonLine({color=C.rose,w="50%"}){return <div style={{width:w,height:1,margin:"12px auto",background:`linear-gradient(90deg,transparent,${color}55,transparent)`}}/>}
 
 // ─── CINEMATIC HERO ────────────────────────────────────────────
-function Hero({onEnter}){
+function Hero({onEnter, musicPlaying}){
   const [phase,setPhase]=useState(0);
   const [hs,setHs]=useState(1);
   const [breathPhase,setBreathPhase]=useState("in"); // "in" or "out"
@@ -74,9 +74,21 @@ function Hero({onEnter}){
     <div style={{position:"absolute",zIndex:2,top:"50%",left:"50%",transform:`translate(-50%,-50%) scale(${hs})`,transition:"transform 0.15s cubic-bezier(0.22,1,0.36,1)",opacity:phase>=1?0.08:0}}>
       <svg width="450" height="400" viewBox="0 0 100 90"><path d="M50 85 C25 65,-5 45,5 25 C12 10,30 8,50 28 C70 8,88 10,95 25 C105 45,75 65,50 85Z" fill="none" stroke={C.rose} strokeWidth="0.3" opacity="0.5"/><path d="M50 85 C25 65,-5 45,5 25 C12 10,30 8,50 28 C70 8,88 10,95 25 C105 45,75 65,50 85Z" fill={C.roseDim}/></svg>
     </div>
-    <svg style={{position:"absolute",bottom:"28%",left:0,width:"100%",height:50,zIndex:2,opacity:phase>=1?0.2:0,transition:"opacity 1.5s ease 0.6s"}} viewBox="0 0 400 50" preserveAspectRatio="none">
-      <path d="M0 25 L115 25 L135 25 L148 8 L158 42 L165 3 L173 47 L183 25 L205 25 L400 25" fill="none" stroke={C.rose} strokeWidth="1" strokeDasharray="500" strokeDashoffset="500" style={{animation:"ecgDraw 3s ease infinite"}}/>
+
+    {/* ECG LINE — switches animation when music plays */}
+    <svg style={{position:"absolute",bottom:"28%",left:0,width:"100%",height:50,zIndex:2,opacity:phase>=1?(musicPlaying?0.4:0.2):0,transition:"opacity 1.5s ease 0.6s"}} viewBox="0 0 400 50" preserveAspectRatio="none">
+      <path d={musicPlaying
+        ? "M0 25 L60 25 L80 25 L90 15 L100 35 L108 5 L115 45 L122 20 L130 30 L140 25 L170 25 L190 25 L200 18 L208 38 L215 8 L222 42 L228 22 L235 28 L245 25 L280 25 L300 25 L308 12 L316 40 L322 6 L328 44 L335 25 L345 25 L400 25"
+        : "M0 25 L115 25 L135 25 L148 8 L158 42 L165 3 L173 47 L183 25 L205 25 L400 25"
+      } fill="none" stroke={C.rose} strokeWidth={musicPlaying?"1.3":"1"} strokeDasharray="500" strokeDashoffset="500"
+        style={{animation:`${musicPlaying?"ecgMusic 2s ease infinite":"ecgDraw 3s ease infinite"}`,transition:"all 0.5s ease"}}/>
     </svg>
+    {/* Second ECG line (subtle, only when music plays) */}
+    {musicPlaying && <svg style={{position:"absolute",bottom:"32%",left:0,width:"100%",height:50,zIndex:2,opacity:0.12,animation:"fadeIn 2s ease"}} viewBox="0 0 400 50" preserveAspectRatio="none">
+      <path d="M0 25 L50 25 L70 20 L80 30 L90 10 L100 40 L108 15 L115 35 L125 25 L200 25 L220 20 L230 32 L240 8 L250 42 L258 18 L268 25 L400 25"
+        fill="none" stroke={C.cyan} strokeWidth="0.8" strokeDasharray="500" strokeDashoffset="500"
+        style={{animation:"ecgMusic 2.5s ease 0.3s infinite"}}/>
+    </svg>}
     <div style={{position:"relative",zIndex:3,textAlign:"center",padding:"0 36px",maxWidth:440,opacity:phase>=1?1:0,transform:phase>=1?"translateY(0)":"translateY(30px)",transition:"all 1.4s cubic-bezier(0.16,1,0.3,1) 0.3s"}}>
       <p style={{fontSize:10,fontWeight:500,textTransform:"uppercase",letterSpacing:6,color:C.textDim,marginBottom:32,animation:"fadeUp 1s ease 0.7s both"}}>Een veilige plek</p>
       <h1 style={{fontFamily:"'Outfit',sans-serif",fontSize:48,fontWeight:200,color:C.text,lineHeight:1.1,letterSpacing:-1,marginBottom:14,animation:"fadeUp 1s ease 0.9s both"}}>hans<span style={{color:C.rose}}>.support</span></h1>
@@ -588,7 +600,7 @@ function HansPage(){
 }
 
 // ─── LOVE AUDIO PLAYER (persistent) ────────────────────────────
-function LovePlayer() {
+function LovePlayer({ onPlayStateChange }) {
   const audioRef = useRef(null);
   const [playing, setPlaying] = useState(false);
   const [progress, setProgress] = useState(0);
@@ -600,7 +612,7 @@ function LovePlayer() {
     const update = () => {
       if (audio.duration) setProgress((audio.currentTime / audio.duration) * 100);
     };
-    const onEnd = () => { setPlaying(false); setProgress(0); };
+    const onEnd = () => { setPlaying(false); setProgress(0); onPlayStateChange && onPlayStateChange(false); };
     audio.addEventListener("timeupdate", update);
     audio.addEventListener("ended", onEnd);
     return () => { audio.removeEventListener("timeupdate", update); audio.removeEventListener("ended", onEnd); };
@@ -613,7 +625,9 @@ function LovePlayer() {
     } else {
       audioRef.current.play().catch(() => {});
     }
-    setPlaying(!playing);
+    const newState = !playing;
+    setPlaying(newState);
+    onPlayStateChange && onPlayStateChange(newState);
     if (!revealed) setRevealed(true);
   };
 
@@ -729,6 +743,7 @@ export default function App(){
   const [menuOpen,setMenuOpen]=useState(false);
   const [hugCount,setHugCount]=useState(0);
   const [hugSent,setHugSent]=useState(false);
+  const [musicPlaying,setMusicPlaying]=useState(false);
 
   const sendHug=()=>{setHugSent(true);setHugCount(c=>c+1);setTimeout(()=>setHugSent(false),2500)};
   const navigate=(p)=>{setPage(p);window.scrollTo({top:0,behavior:"smooth"})};
@@ -746,6 +761,7 @@ export default function App(){
     @keyframes heroPulse{0%,100%{opacity:1}50%{opacity:0.8}}
     @keyframes floatP{0%,100%{transform:translateY(0) translateX(0);opacity:0.12}50%{transform:translateY(-25px) translateX(12px);opacity:0.3}}
     @keyframes ecgDraw{0%{stroke-dashoffset:500}40%{stroke-dashoffset:0}100%{stroke-dashoffset:-500}}
+    @keyframes ecgMusic{0%{stroke-dashoffset:500;opacity:0.25}30%{stroke-dashoffset:200;opacity:0.45}50%{stroke-dashoffset:0;opacity:0.35}70%{stroke-dashoffset:-150;opacity:0.5}100%{stroke-dashoffset:-500;opacity:0.25}}
     @keyframes scrollDot{0%{transform:translateY(0);opacity:0.4}50%{transform:translateY(10px);opacity:0.1}100%{transform:translateY(0);opacity:0.4}}
     @keyframes vinylSpin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
     *{box-sizing:border-box;margin:0;padding:0}
@@ -755,7 +771,7 @@ export default function App(){
     ::-webkit-scrollbar{width:0;height:0}
   `;
 
-  if(!entered) return <><style>{css}</style><Hero onEnter={()=>setEntered(true)}/></>;
+  if(!entered) return <><style>{css}</style><Hero onEnter={()=>setEntered(true)} musicPlaying={musicPlaying}/><LovePlayer onPlayStateChange={setMusicPlaying}/></>;
 
   return <div style={{minHeight:"100vh",background:C.bg,fontFamily:"'Outfit','Segoe UI',sans-serif",color:C.text}}>
     <style>{css}</style>
@@ -763,7 +779,7 @@ export default function App(){
     <div style={{position:"fixed",inset:0,pointerEvents:"none",zIndex:0,background:`radial-gradient(ellipse at 50% 15%,${C.roseDim} 0%,transparent 50%),radial-gradient(ellipse at 15% 75%,${C.cyanDim} 0%,transparent 35%),radial-gradient(ellipse at 85% 55%,${C.purpleGlow} 0%,transparent 35%)`}}/>
 
     <SlideMenu open={menuOpen} onClose={()=>setMenuOpen(false)} onNavigate={navigate} current={page}/>
-    <LovePlayer />
+    <LovePlayer onPlayStateChange={setMusicPlaying} />
 
     {/* Top bar */}
     <div style={{position:"sticky",top:0,zIndex:50,background:C.bgGlass,backdropFilter:"blur(20px)",WebkitBackdropFilter:"blur(20px)",borderBottom:`1px solid ${C.border}`}}>
