@@ -167,47 +167,119 @@ function HeartLanding({onNavigate,hugCount,onHug,hugSent}){
       )}
     </div></Fade>
 
-    {/* ─── 5-STAR REVIEWS ─── */}
-    <Fade d={0.7}><div style={{width:"100%",maxWidth:400,marginTop:48}}>
-      <div style={{display:"flex",alignItems:"center",justifyContent:"center",gap:8,marginBottom:6}}>
-        <span style={{fontSize:11,fontWeight:600,textTransform:"uppercase",letterSpacing:3,color:C.textDim}}>Reviews</span>
-        <span style={{fontSize:13,color:C.amber}}>★★★★★</span>
-        <span style={{fontSize:11,color:C.textDim}}>5/5 reeten</span>
-      </div>
-      <p style={{fontSize:10,color:C.textGhost,textAlign:"center",marginBottom:20}}>Gebaseerd op 1 relatie en 0 alternatieven</p>
-
-      {[
-        {name:"Cheyenne",time:"2 dagen geleden",stars:5,text:"Hans liet de achterdeur open bij -3°C. Ik diende een ticket in. Binnen 8 minuten stond hij met een dekentje, warme chocolademelk én excuses. 10/10 incident response, dikke billen service.",verified:true},
-        {name:"Hans z'n moeder",time:"1 week geleden",stars:5,text:"Eindelijk een platform waar mijn zoon z'n leven op orde krijgt. Had dit 25 jaar eerder moeten bestaan. Die jongen kan nog steeds geen was draaien maar hij heeft er nu tenminste een protocol voor.",verified:false},
-        {name:"De Achterdeur",time:"3 weken geleden",stars:5,text:"Sinds hans.support word ik eindelijk serieus genomen. Voorheen stond ik uren open in de vrieskou. Nu krijg ik een KRITIEK INCIDENT status. Respect.",verified:true},
-        {name:"Rik",time:"1 maand geleden",stars:5,text:"Hans vertelde me over dit project. Ik dacht dat het een grap was. Toen zag ik de Trust Barometer, de NVC-engine, en het Agreement Protocol voor de was. Dit is geen website. Dit is therapie met CSS.",verified:false},
-        {name:"De Wasmachine",time:"2 maanden geleden",stars:5,text:"Hans heeft me nog nooit aangeraakt. Ik sta hier maar. Te wachten. Het Was Protocol v1.0 geeft me hoop dat we ooit een connectie zullen hebben. Status: concept. Net als onze relatie.",verified:true},
-      ].map((r,i)=>
-        <Fade key={i} d={0.75+i*0.08}><div style={{
-          background:C.bgCard,border:`1px solid ${C.border}`,borderRadius:16,
-          padding:"18px 20px",marginBottom:10,textAlign:"left",
-          transition:"all 0.3s ease",
-        }}>
-          <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:8}}>
-            <div style={{display:"flex",alignItems:"center",gap:8}}>
-              <span style={{fontSize:13,fontWeight:600,color:C.text}}>{r.name}</span>
-              {r.verified&&<span style={{fontSize:9,color:C.green,background:C.greenGlow,padding:"2px 6px",borderRadius:4,fontWeight:600}}>✓ GEVERIFIEERD</span>}
-            </div>
-            <span style={{fontSize:10,color:C.textGhost}}>{r.time}</span>
-          </div>
-          <div style={{marginBottom:8}}>
-            <span style={{fontSize:12,color:C.amber,letterSpacing:2}}>{"★".repeat(r.stars)}</span>
-            <span style={{fontSize:10,color:C.textDim,marginLeft:6}}>{r.stars}/5 reeten</span>
-          </div>
-          <p style={{fontSize:13,color:C.textMuted,lineHeight:1.7,margin:0}}>{r.text}</p>
-        </div></Fade>
-      )}
-
-      <Fade d={1.2}><p style={{fontSize:10,color:C.textGhost,textAlign:"center",marginTop:12,fontStyle:"italic"}}>
-        "Dikke billen, dik vertrouwen." — hans.support marketing afdeling (1 persoon)
-      </p></Fade>
-    </div></Fade>
+    {/* ─── FLOATING REVIEWS ─── */}
+    <FloatingReviews />
   </div>;
+}
+
+// ─── HANS AVATAR BASE64 ────────────────────────────────────────
+const HANS_AVATAR = "data:image/jpeg;base64,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";
+
+const REVIEW_QUOTES = [
+  { text: "Dikke billen service 🍑", sub: "10/10 incident response" },
+  { text: "Therapie met CSS", sub: "— Rik, verbaasde vriend" },
+  { text: "Deur dicht = liefde", sub: "★★★★★ 5/5 reeten" },
+  { text: "Hans kan geen was draaien", sub: "— Hans z'n moeder" },
+  { text: "Eindelijk serieus genomen", sub: "— De Achterdeur, geverifieerd" },
+  { text: "Knuffel-deficit: opgelost", sub: "Connection Metrics™" },
+  { text: "Niet kwaadaardig, gewoon Hans", sub: "— Hans Analyse rapport" },
+  { text: "Protocol voor alles", sub: "zelfs voor de wasmachine" },
+  { text: "Warme chocomelk in 8 min", sub: "SLA: ∞ geduld, snelle actie" },
+  { text: "Status: concept. Net als wij.", sub: "— De Wasmachine, hoopvol" },
+];
+
+// Positions where badges can appear (spread around the page)
+const POSITIONS = [
+  { top: "8%", left: "2%", align: "left" },
+  { top: "15%", right: "2%", align: "right" },
+  { top: "32%", left: "0%", align: "left" },
+  { top: "45%", right: "0%", align: "right" },
+  { top: "58%", left: "1%", align: "left" },
+  { top: "70%", right: "1%", align: "right" },
+  { top: "82%", left: "2%", align: "left" },
+  { top: "90%", right: "3%", align: "right" },
+];
+
+function FloatingReviews() {
+  const [visibleReviews, setVisibleReviews] = useState([]);
+  const usedPositions = useRef(new Set());
+  const usedQuotes = useRef(new Set());
+  const reviewCounter = useRef(0);
+
+  useEffect(() => {
+    // Show first one quickly
+    const firstTimer = setTimeout(() => addReview(), 2000);
+    // Then stagger the rest
+    const interval = setInterval(() => {
+      if (reviewCounter.current < 4) addReview();
+    }, 3500);
+    return () => { clearTimeout(firstTimer); clearInterval(interval); };
+  }, []);
+
+  const addReview = () => {
+    // Pick random unused position
+    const availPos = POSITIONS.filter((_, i) => !usedPositions.current.has(i));
+    if (availPos.length === 0) return;
+    const posIdx = POSITIONS.indexOf(availPos[Math.floor(Math.random() * availPos.length)]);
+    usedPositions.current.add(posIdx);
+
+    // Pick random unused quote
+    const availQuotes = REVIEW_QUOTES.filter((_, i) => !usedQuotes.current.has(i));
+    if (availQuotes.length === 0) return;
+    const quoteIdx = REVIEW_QUOTES.indexOf(availQuotes[Math.floor(Math.random() * availQuotes.length)]);
+    usedQuotes.current.add(quoteIdx);
+
+    reviewCounter.current++;
+    setVisibleReviews(prev => [...prev, { pos: posIdx, quote: quoteIdx, id: Date.now() }]);
+  };
+
+  return <>
+    {visibleReviews.map((r) => {
+      const pos = POSITIONS[r.pos];
+      const quote = REVIEW_QUOTES[r.quote];
+      const fromRight = pos.align === "right";
+      return (
+        <div key={r.id} style={{
+          position: "fixed",
+          top: pos.top,
+          left: pos.left || "auto",
+          right: pos.right || "auto",
+          zIndex: 40,
+          animation: `${fromRight ? "slideFromRight" : "slideFromLeft"} 0.8s cubic-bezier(0.16,1,0.3,1) both`,
+          pointerEvents: "none",
+          maxWidth: 220,
+        }}>
+          <div style={{
+            display: "flex",
+            alignItems: "center",
+            gap: 10,
+            background: C.bgGlass,
+            backdropFilter: "blur(16px)",
+            WebkitBackdropFilter: "blur(16px)",
+            border: `1px solid ${C.border}`,
+            borderRadius: 14,
+            padding: "10px 14px",
+            boxShadow: `0 4px 20px rgba(0,0,0,0.3), 0 0 15px ${C.roseDim}`,
+          }}>
+            <img src={HANS_AVATAR} alt="" style={{
+              width: 36, height: 36, borderRadius: "50%",
+              border: `2px solid ${C.rose}44`,
+              flexShrink: 0,
+              objectFit: "cover",
+            }} />
+            <div>
+              <p style={{ fontSize: 12, fontWeight: 600, color: C.text, margin: 0, lineHeight: 1.3 }}>
+                {quote.text}
+              </p>
+              <p style={{ fontSize: 9, color: C.textDim, margin: "3px 0 0", lineHeight: 1.2 }}>
+                {quote.sub}
+              </p>
+            </div>
+          </div>
+        </div>
+      );
+    })}
+  </>;
 }
 
 // ─── SLIDE MENU ────────────────────────────────────────────────
@@ -444,6 +516,8 @@ export default function App(){
     @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@200;300;400;500;600;700&display=swap');
     @keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
     @keyframes fadeIn{from{opacity:0}to{opacity:1}}
+    @keyframes slideFromLeft{from{opacity:0;transform:translateX(-80px)}to{opacity:1;transform:translateX(0)}}
+    @keyframes slideFromRight{from{opacity:0;transform:translateX(80px)}to{opacity:1;transform:translateX(0)}}
     @keyframes heartBeat{0%,100%{transform:scale(1)}50%{transform:scale(1.04)}}
     @keyframes heartGlow{0%,100%{opacity:0.3;transform:translate(-50%,-50%) scale(1)}50%{opacity:0.6;transform:translate(-50%,-50%) scale(1.07)}}
     @keyframes heroPulse{0%,100%{opacity:1}50%{opacity:0.8}}
