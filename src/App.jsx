@@ -215,9 +215,19 @@ function HeartLanding({onNavigate,hugCount,onHug,hugSent}){
       )}
     </div></Fade>
 
-    {/* ─── FLOATING REVIEWS ─── */}
-    <FloatingReviews />
+    {/* ─── FLOATING REVIEWS (delayed 3s) ─── */}
+    <DelayedReviews />
   </div>;
+}
+
+function DelayedReviews() {
+  const [show, setShow] = useState(false);
+  useEffect(() => {
+    const t = setTimeout(() => setShow(true), 3000);
+    return () => clearTimeout(t);
+  }, []);
+  if (!show) return null;
+  return <FloatingReviews />;
 }
 
 // ─── HANS AVATAR BASE64 ────────────────────────────────────────
@@ -324,10 +334,10 @@ function FloatingReviews() {
       }, 7000));
     };
 
-    // Initial delay then stagger 3 reviews
+    // First one appears immediately (component already delayed 3s), then stagger
+    timers.push(setTimeout(() => addOne(), 200));
     timers.push(setTimeout(() => addOne(), 2500));
     timers.push(setTimeout(() => addOne(), 5000));
-    timers.push(setTimeout(() => addOne(), 7500));
 
     // Then keep cycling — add one every 4.5s
     const interval = setInterval(() => addOne(), 4500);
