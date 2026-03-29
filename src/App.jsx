@@ -177,27 +177,38 @@ const HANS_AVATAR = "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAgG
 
 const REVIEW_QUOTES = [
   { text: "Dikke billen service 🍑", sub: "10/10 incident response" },
+  { text: "Ze is gewoon geil!", sub: "★★★★★★ 6/5 reeten" },
+  { text: "Morgen sporten is morgen sporten", sub: "★★★★☆ 4/5 reeten" },
+  { text: "Hond-afstemming: chaotisch", sub: "wie laat 'm uit? niemand weet het" },
+  { text: "Hans kan geen was draaien", sub: "— Hans z'n moeder, teleurgesteld" },
   { text: "Therapie met CSS", sub: "— Rik, verbaasde vriend" },
   { text: "Deur dicht = liefde", sub: "★★★★★ 5/5 reeten" },
-  { text: "Hans kan geen was draaien", sub: "— Hans z'n moeder" },
   { text: "Eindelijk serieus genomen", sub: "— De Achterdeur, geverifieerd" },
-  { text: "Knuffel-deficit: opgelost", sub: "Connection Metrics™" },
   { text: "Niet kwaadaardig, gewoon Hans", sub: "— Hans Analyse rapport" },
-  { text: "Protocol voor alles", sub: "zelfs voor de wasmachine" },
-  { text: "Warme chocomelk in 8 min", sub: "SLA: ∞ geduld, snelle actie" },
   { text: "Status: concept. Net als wij.", sub: "— De Wasmachine, hoopvol" },
+  { text: "Wie geeft de hond eten?", sub: "Protocol: nog niet geschreven" },
+  { text: "Haar kont verdient een eigen tab", sub: "feature request ingediend" },
+  { text: "Hans zei 'zo' en deed niks", sub: "★★★☆☆ 3/5 reeten" },
+  { text: "Knuffel-deficit: opgelost 🤗", sub: "Connection Metrics™" },
+  { text: "Cheyenne > Hans, altijd", sub: "— het algoritme, eerlijk" },
+  { text: "Sporten? Morgen. Altijd morgen.", sub: "dag 847 zonder sportschool" },
+  { text: "Warme chocomelk in 8 min", sub: "incident response SLA: voldoende" },
+  { text: "De hond luistert naar niemand", sub: "net als Hans eigenlijk" },
+  { text: "Protocol voor alles behalve gym", sub: "prioriteiten zijn duidelijk" },
+  { text: "Die billen zijn geen bug", sub: "dat is een feature 🍑" },
 ];
 
 // Positions where badges can appear (spread around the page)
 const POSITIONS = [
-  { top: "8%", left: "2%", align: "left" },
-  { top: "15%", right: "2%", align: "right" },
-  { top: "32%", left: "0%", align: "left" },
-  { top: "45%", right: "0%", align: "right" },
-  { top: "58%", left: "1%", align: "left" },
-  { top: "70%", right: "1%", align: "right" },
-  { top: "82%", left: "2%", align: "left" },
-  { top: "90%", right: "3%", align: "right" },
+  { top: "6%", left: "2%", align: "left" },
+  { top: "14%", right: "2%", align: "right" },
+  { top: "26%", left: "1%", align: "left" },
+  { top: "38%", right: "1%", align: "right" },
+  { top: "50%", left: "2%", align: "left" },
+  { top: "62%", right: "2%", align: "right" },
+  { top: "74%", left: "1%", align: "left" },
+  { top: "84%", right: "1%", align: "right" },
+  { top: "92%", left: "3%", align: "left" },
 ];
 
 function FloatingReviews() {
@@ -207,12 +218,27 @@ function FloatingReviews() {
   const reviewCounter = useRef(0);
 
   useEffect(() => {
-    // Show first one quickly
-    const firstTimer = setTimeout(() => addReview(), 2000);
-    // Then stagger the rest
+    const firstTimer = setTimeout(() => addReview(), 1800);
     const interval = setInterval(() => {
-      if (reviewCounter.current < 4) addReview();
-    }, 3500);
+      if (reviewCounter.current < 5) {
+        addReview();
+      } else {
+        // Cycle: remove oldest, add new
+        setVisibleReviews(prev => {
+          if (prev.length > 0) {
+            const removed = prev[0];
+            usedPositions.current.delete(removed.pos);
+            return prev.slice(1);
+          }
+          return prev;
+        });
+        // Small delay then add fresh one
+        setTimeout(() => {
+          usedPositions.current = new Set([...usedPositions.current].slice(-4));
+          addReview();
+        }, 600);
+      }
+    }, 3000);
     return () => { clearTimeout(firstTimer); clearInterval(interval); };
   }, []);
 
