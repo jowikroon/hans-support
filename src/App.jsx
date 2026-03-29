@@ -587,6 +587,141 @@ function HansPage(){
   </div>;
 }
 
+// ─── LOVE AUDIO PLAYER (persistent) ────────────────────────────
+function LovePlayer() {
+  const audioRef = useRef(null);
+  const [playing, setPlaying] = useState(false);
+  const [progress, setProgress] = useState(0);
+  const [revealed, setRevealed] = useState(false);
+
+  useEffect(() => {
+    if (!audioRef.current) return;
+    const audio = audioRef.current;
+    const update = () => {
+      if (audio.duration) setProgress((audio.currentTime / audio.duration) * 100);
+    };
+    const onEnd = () => { setPlaying(false); setProgress(0); };
+    audio.addEventListener("timeupdate", update);
+    audio.addEventListener("ended", onEnd);
+    return () => { audio.removeEventListener("timeupdate", update); audio.removeEventListener("ended", onEnd); };
+  }, []);
+
+  const toggle = () => {
+    if (!audioRef.current) return;
+    if (playing) {
+      audioRef.current.pause();
+    } else {
+      audioRef.current.play().catch(() => {});
+    }
+    setPlaying(!playing);
+    if (!revealed) setRevealed(true);
+  };
+
+  // Use base path for GitHub Pages
+  const audioSrc = (typeof window !== "undefined" && window.location.pathname.includes("hans-support"))
+    ? "/hans-support/liefdesbrief.mp3"
+    : "/liefdesbrief.mp3";
+
+  return (
+    <>
+      <audio ref={audioRef} src={audioSrc} preload="metadata" />
+      <div style={{
+        position: "fixed",
+        bottom: 20, right: 20,
+        zIndex: 90,
+        animation: "fadeUp 1s ease 2s both",
+      }}>
+        {/* Main button */}
+        <button onClick={toggle} style={{
+          display: "flex", alignItems: "center", gap: 12,
+          background: C.bgGlass,
+          backdropFilter: "blur(20px)", WebkitBackdropFilter: "blur(20px)",
+          border: `1px solid ${playing ? C.rose + "55" : C.border}`,
+          borderRadius: 60, padding: "10px 20px 10px 12px",
+          cursor: "pointer", fontFamily: "inherit",
+          transition: "all 0.4s ease",
+          boxShadow: playing ? `0 0 30px ${C.roseGlow}, 0 4px 20px rgba(0,0,0,0.3)` : `0 4px 16px rgba(0,0,0,0.25)`,
+        }}>
+          {/* Vinyl/disc icon */}
+          <div style={{
+            width: 36, height: 36, borderRadius: "50%",
+            background: `conic-gradient(from 0deg, ${C.rose}33, ${C.purple}22, ${C.rose}33, ${C.cyan}22, ${C.rose}33)`,
+            border: `2px solid ${C.rose}44`,
+            display: "flex", alignItems: "center", justifyContent: "center",
+            animation: playing ? "vinylSpin 3s linear infinite" : "none",
+            transition: "all 0.3s ease",
+          }}>
+            {/* Center dot */}
+            <div style={{
+              width: 10, height: 10, borderRadius: "50%",
+              background: playing ? C.rose : C.textDim,
+              boxShadow: playing ? `0 0 8px ${C.rose}88` : "none",
+              transition: "all 0.3s ease",
+            }} />
+          </div>
+
+          {/* Text */}
+          <div style={{ textAlign: "left" }}>
+            <p style={{
+              fontSize: 12, fontWeight: 500,
+              color: playing ? C.rose : C.text,
+              margin: 0, lineHeight: 1.3,
+              transition: "color 0.3s ease",
+            }}>
+              {playing ? "Nu aan het spelen..." : "Voor jou ♥"}
+            </p>
+            <p style={{
+              fontSize: 9, color: C.textDim, margin: "2px 0 0",
+              letterSpacing: 0.5,
+            }}>
+              {playing ? "Liefdesbrief" : "Druk om te luisteren"}
+            </p>
+          </div>
+
+          {/* Play/pause icon */}
+          <div style={{
+            width: 24, height: 24,
+            display: "flex", alignItems: "center", justifyContent: "center",
+            marginLeft: 4,
+          }}>
+            {playing ? (
+              <svg width="14" height="14" viewBox="0 0 14 14" fill={C.rose}>
+                <rect x="2" y="1" width="3.5" height="12" rx="1" />
+                <rect x="8.5" y="1" width="3.5" height="12" rx="1" />
+              </svg>
+            ) : (
+              <svg width="14" height="14" viewBox="0 0 14 14" fill={C.text}>
+                <path d="M3 1.5v11l9-5.5z" />
+              </svg>
+            )}
+          </div>
+        </button>
+
+        {/* Progress bar (only when playing or revealed) */}
+        {revealed && (
+          <div style={{
+            marginTop: 6,
+            height: 3, borderRadius: 2,
+            background: C.border,
+            overflow: "hidden",
+            opacity: playing ? 1 : 0.4,
+            transition: "opacity 0.3s ease",
+          }}>
+            <div style={{
+              height: "100%",
+              width: `${progress}%`,
+              background: `linear-gradient(90deg, ${C.rose}, ${C.roseBright})`,
+              borderRadius: 2,
+              transition: "width 0.3s ease",
+              boxShadow: `0 0 6px ${C.roseGlow}`,
+            }} />
+          </div>
+        )}
+      </div>
+    </>
+  );
+}
+
 // ─── APP ───────────────────────────────────────────────────────
 export default function App(){
   const [entered,setEntered]=useState(false);
@@ -612,6 +747,7 @@ export default function App(){
     @keyframes floatP{0%,100%{transform:translateY(0) translateX(0);opacity:0.12}50%{transform:translateY(-25px) translateX(12px);opacity:0.3}}
     @keyframes ecgDraw{0%{stroke-dashoffset:500}40%{stroke-dashoffset:0}100%{stroke-dashoffset:-500}}
     @keyframes scrollDot{0%{transform:translateY(0);opacity:0.4}50%{transform:translateY(10px);opacity:0.1}100%{transform:translateY(0);opacity:0.4}}
+    @keyframes vinylSpin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
     *{box-sizing:border-box;margin:0;padding:0}
     ::selection{background:${C.rose}33}
     textarea::placeholder{color:${C.textDim}}
@@ -627,6 +763,7 @@ export default function App(){
     <div style={{position:"fixed",inset:0,pointerEvents:"none",zIndex:0,background:`radial-gradient(ellipse at 50% 15%,${C.roseDim} 0%,transparent 50%),radial-gradient(ellipse at 15% 75%,${C.cyanDim} 0%,transparent 35%),radial-gradient(ellipse at 85% 55%,${C.purpleGlow} 0%,transparent 35%)`}}/>
 
     <SlideMenu open={menuOpen} onClose={()=>setMenuOpen(false)} onNavigate={navigate} current={page}/>
+    <LovePlayer />
 
     {/* Top bar */}
     <div style={{position:"sticky",top:0,zIndex:50,background:C.bgGlass,backdropFilter:"blur(20px)",WebkitBackdropFilter:"blur(20px)",borderBottom:`1px solid ${C.border}`}}>
