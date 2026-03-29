@@ -638,10 +638,7 @@ function LovePlayer({ onPlayStateChange }) {
     if (!revealed) setRevealed(true);
   };
 
-  // Use base path for GitHub Pages
-  const audioSrc = (typeof window !== "undefined" && window.location.pathname.includes("hans-support"))
-    ? "/hans-support/liefdesbrief.mp3"
-    : "/liefdesbrief.mp3";
+  const audioSrc = "/liefdesbrief.mp3";
 
   return (
     <>
