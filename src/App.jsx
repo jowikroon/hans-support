@@ -166,6 +166,47 @@ function HeartLanding({onNavigate,hugCount,onHug,hugSent}){
         </button>
       )}
     </div></Fade>
+
+    {/* ─── 5-STAR REVIEWS ─── */}
+    <Fade d={0.7}><div style={{width:"100%",maxWidth:400,marginTop:48}}>
+      <div style={{display:"flex",alignItems:"center",justifyContent:"center",gap:8,marginBottom:6}}>
+        <span style={{fontSize:11,fontWeight:600,textTransform:"uppercase",letterSpacing:3,color:C.textDim}}>Reviews</span>
+        <span style={{fontSize:13,color:C.amber}}>★★★★★</span>
+        <span style={{fontSize:11,color:C.textDim}}>5/5 reeten</span>
+      </div>
+      <p style={{fontSize:10,color:C.textGhost,textAlign:"center",marginBottom:20}}>Gebaseerd op 1 relatie en 0 alternatieven</p>
+
+      {[
+        {name:"Cheyenne",time:"2 dagen geleden",stars:5,text:"Hans liet de achterdeur open bij -3°C. Ik diende een ticket in. Binnen 8 minuten stond hij met een dekentje, warme chocolademelk én excuses. 10/10 incident response, dikke billen service.",verified:true},
+        {name:"Hans z'n moeder",time:"1 week geleden",stars:5,text:"Eindelijk een platform waar mijn zoon z'n leven op orde krijgt. Had dit 25 jaar eerder moeten bestaan. Die jongen kan nog steeds geen was draaien maar hij heeft er nu tenminste een protocol voor.",verified:false},
+        {name:"De Achterdeur",time:"3 weken geleden",stars:5,text:"Sinds hans.support word ik eindelijk serieus genomen. Voorheen stond ik uren open in de vrieskou. Nu krijg ik een KRITIEK INCIDENT status. Respect.",verified:true},
+        {name:"Rik",time:"1 maand geleden",stars:5,text:"Hans vertelde me over dit project. Ik dacht dat het een grap was. Toen zag ik de Trust Barometer, de NVC-engine, en het Agreement Protocol voor de was. Dit is geen website. Dit is therapie met CSS.",verified:false},
+        {name:"De Wasmachine",time:"2 maanden geleden",stars:5,text:"Hans heeft me nog nooit aangeraakt. Ik sta hier maar. Te wachten. Het Was Protocol v1.0 geeft me hoop dat we ooit een connectie zullen hebben. Status: concept. Net als onze relatie.",verified:true},
+      ].map((r,i)=>
+        <Fade key={i} d={0.75+i*0.08}><div style={{
+          background:C.bgCard,border:`1px solid ${C.border}`,borderRadius:16,
+          padding:"18px 20px",marginBottom:10,textAlign:"left",
+          transition:"all 0.3s ease",
+        }}>
+          <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:8}}>
+            <div style={{display:"flex",alignItems:"center",gap:8}}>
+              <span style={{fontSize:13,fontWeight:600,color:C.text}}>{r.name}</span>
+              {r.verified&&<span style={{fontSize:9,color:C.green,background:C.greenGlow,padding:"2px 6px",borderRadius:4,fontWeight:600}}>✓ GEVERIFIEERD</span>}
+            </div>
+            <span style={{fontSize:10,color:C.textGhost}}>{r.time}</span>
+          </div>
+          <div style={{marginBottom:8}}>
+            <span style={{fontSize:12,color:C.amber,letterSpacing:2}}>{"★".repeat(r.stars)}</span>
+            <span style={{fontSize:10,color:C.textDim,marginLeft:6}}>{r.stars}/5 reeten</span>
+          </div>
+          <p style={{fontSize:13,color:C.textMuted,lineHeight:1.7,margin:0}}>{r.text}</p>
+        </div></Fade>
+      )}
+
+      <Fade d={1.2}><p style={{fontSize:10,color:C.textGhost,textAlign:"center",marginTop:12,fontStyle:"italic"}}>
+        "Dikke billen, dik vertrouwen." — hans.support marketing afdeling (1 persoon)
+      </p></Fade>
+    </div></Fade>
   </div>;
 }
 
